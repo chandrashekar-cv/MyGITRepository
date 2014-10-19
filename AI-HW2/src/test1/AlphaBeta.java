@@ -34,75 +34,90 @@ String log = "Node,Depth,Value,Alpha,Beta";
 	
 	Node MAX(Node current, int depth, Agent myAgent,String player, String opponent, int Alpha, int Beta)
 	{
-		
-		
 		PriorityQueue<Node> movesAvail = new PriorityQueue<Node>();
 		
 		List<Node> result = possibleMoves(current,depth+1,myAgent,player,opponent);
 		if(result!=null)
 			movesAvail.addAll(result);
-		
-		
 		Node myMove = null;
 		if(!movesAvail.isEmpty())
 		{
-			myMove=movesAvail.peek();
+			int tempAlpha = -99999;
+			
 			while(!movesAvail.isEmpty())
 			{
-					AddLog(current, Alpha, Beta, depth);
-					Node next = movesAvail.poll();
+				AddLog(current, Alpha, Beta, depth);
+				Node next = movesAvail.poll();
 		
 					//Call MIN
 				Node temp = MIN(next, depth+1, myAgent,opponent,player,Alpha, Beta);
 				
-				if(Alpha < temp.Beta)
+				if(tempAlpha < temp.score)
+					tempAlpha = temp.score;
+					
+				if(current.score < temp.score)
 				{
-					Alpha = temp.Beta;
-					
-					myMove = next;
-					myMove.Alpha = Alpha;
-					myMove.score= Alpha;
-					
-					current.score = Alpha;
-					current.Alpha = Alpha;
+					current.myMove = next;
+					current.score = temp.score;
 				}
 				
-				if(Alpha >= Beta)
+				if(tempAlpha >= Beta)
 				{
-					myMove.Alpha = Alpha;
-					current.Alpha = Alpha;
-					current.score = current.Alpha;
 					AddLog(current, Alpha, Beta, depth);
-				
-					return myMove;
+					return current;
 				}
+				
+				if(Alpha < tempAlpha)
+					Alpha = tempAlpha;
+				
+				
+				
+				current.Alpha = Alpha;
 					
 			}
 			
 		}
 		else  //No move found for the current player
 		{
-			int currentScore = current.score;
-			current.Alpha = Alpha;
-			current.Beta = Beta;
-			myMove = current;
-			
-			if(depth<myAgent.searchCutOffDepth)
+			if(depth<myAgent.searchCutOffDepth && checkEndGame(current.newStringConfig,player,opponent))
 			{
 				if(current.pass)
 				{
-					return myMove;
+					return current;
 				}
 				else
 				{
 					AddLog(current, Alpha, Beta, depth);
-					current.pass = true;
 					
-					Node temp = MIN(current, depth+1, myAgent, opponent, player, Alpha, Beta);
+					Node temp = new Node();
+					temp .startNode = current.startNode;
+					temp.endNode = current.endNode;
+					temp.gameMode = myAgent.mode;
+					temp.Alpha = current.Alpha;
+					temp.Beta = current.Beta;
+					temp.pass = true;
+					temp.score = current.Beta;
+					temp.copyArray(current,opponent);
 					
-					myMove.score = currentScore;
-					myMove.Beta = Beta;
-					myMove.Alpha = temp.Alpha;
+					Node uselessMove = MIN(temp, depth+1, myAgent, opponent, player, Alpha, Beta);
+					int tempAlpha = -99999;
+					
+					if(tempAlpha < uselessMove.score)
+						tempAlpha = uselessMove.score;
+					
+					if(current.score < uselessMove.score)
+						current.score = uselessMove.score;
+					
+					if(tempAlpha >= Beta)
+					{
+						AddLog(current, Alpha, Beta, depth);
+						return current;
+					}
+					
+					if(tempAlpha > Alpha)
+						Alpha = tempAlpha;
+					
+					current.Alpha = Alpha;
 					
 				}
 			
@@ -112,7 +127,7 @@ String log = "Node,Depth,Value,Alpha,Beta";
 		
 		
 		AddLog(current, Alpha, Beta, depth);
-		return myMove;
+		return current;
 		
 	}
 	
@@ -124,10 +139,11 @@ String log = "Node,Depth,Value,Alpha,Beta";
 		if(result!=null)
 			movesAvail.addAll(result);
 		
-		Node myMove =null;
+		
 		if(!movesAvail.isEmpty())
 		{
-			myMove = movesAvail.peek();
+			int tempBeta = 99999;
+			
 			while(!movesAvail.isEmpty())
 			{
 				AddLog(current, Alpha, Beta, depth);
@@ -137,54 +153,74 @@ String log = "Node,Depth,Value,Alpha,Beta";
 				//Call MAX
 				Node temp = MAX(next, depth+1, myAgent, opponent, player, Alpha, Beta);
 				
-				if(Beta > temp.score)
+				if(tempBeta > temp.score)
 				{
-					Beta = temp.score;
-					myMove = next;
-					myMove.score = Beta;
-					myMove.Beta = Beta;
-					current.score = Beta;
-					current.Beta = Beta;
-					//update current.score
+					tempBeta = temp.score;
 				}
+				
+				if(current.score > temp.score)
+					current.score = temp.score;
 				
 				if(Alpha >= Beta)
 				{
-					myMove.Beta = Beta; 
-					current.Beta = Beta;
-					current.score = current.Beta;
-		
 					AddLog(current, Alpha, Beta, depth);
-					return myMove;
+					return current;
 				}
 				
+				if(Beta > tempBeta)
+				{
+					Beta = tempBeta;
+				}
+				
+				
+				current.Beta = Beta;
 				
 			}
 		}
 		else
 		{
-			
-			int currentScore = current.score;
-			current.Alpha = currentScore;
-			current.Beta = Beta;
-			myMove = current;
-			
-			if(depth<myAgent.searchCutOffDepth)
+			if(depth<myAgent.searchCutOffDepth && checkEndGame(current.newStringConfig,player,opponent))
 			{
 				if(current.pass)
 				{
-					return myMove;
+					return current;
 				}
 				else
 				{
-					current.pass = true;
+//					/current.pass = true;
 					AddLog(current, Alpha, Beta, depth);
 					
-					Node temp  = MAX(current, depth+1, myAgent, opponent, player, Alpha, Beta);
+					Node temp = new Node();
+					temp .startNode = current.startNode;
+					temp.endNode = current.endNode;
+					temp.gameMode = myAgent.mode;
+					temp.Alpha = current.Alpha;
+					temp.Beta = current.Beta;
+					temp.pass = true;
+					temp.score = current.Alpha;
+					temp.copyArray(current,opponent);
 					
-					myMove.Alpha = Alpha;
-					myMove.Beta = temp.Beta;
-					myMove.score = temp.Beta;
+					Node uselessMove  = MAX(temp, depth+1, myAgent, opponent, player, Alpha, Beta);
+					int tempBeta = 99999;
+					
+					if(tempBeta > uselessMove.score)
+					{
+						tempBeta = uselessMove.score;
+					}
+					
+					if(current.score > uselessMove.score)
+						current.score = uselessMove.score;
+					
+					if(Alpha >= tempBeta)
+					{
+						AddLog(current, Alpha, Beta, depth);
+						return current;
+					}
+					
+					if(Beta > tempBeta)
+						Beta = tempBeta;
+					
+					current.Beta = Beta;
 					
 				}
 			}
@@ -192,12 +228,31 @@ String log = "Node,Depth,Value,Alpha,Beta";
 		}
 		
 		AddLog(current, Alpha, Beta, depth);
-		return myMove;
+		return current;
 	
 	}
 	
 	
-	
+	 static boolean checkEndGame(String[][] state,String player, String opponent)
+	{
+		boolean pl=false;
+		boolean op = false;
+		boolean fullBoard = true;
+		
+		for(int i=0;i<state.length;i++)
+			for(int j=0;j<state.length;j++)
+			{
+				if(!pl)
+					{pl = (!pl && state[i][j].equalsIgnoreCase(player))? true: false;}
+				if(!op)
+					{op = (!op && state[i][j].equalsIgnoreCase(opponent))? true: false;}
+				
+				if(state[i][j].equals("*"))
+					fullBoard = false;
+			}
+				
+		return (!fullBoard && op && pl);
+	}
 	
 	/*
 	 * Identify the possible moves in the current board configuration.
@@ -222,50 +277,50 @@ String log = "Node,Depth,Value,Alpha,Beta";
 					switch(k)
 					{
 						
-						case 0: if(i>1 && j>1 && myAgent.dataSet[i-1][j-1]>=0)
+						case 0: if(i>1 && j>1 && node.newConfig[i-1][j-1]>=0)
 								{
 									newPosition = searchPosition(node, myAgent,i-1,j-1,k,player);
 								}
 								break;
 						
-						case 1: if(i>1 && myAgent.dataSet[i-1][j]>=0)
+						case 1: if(i>1 && node.newConfig[i-1][j]>=0)
 								{
 									newPosition = searchPosition(node, myAgent,i-1,j,k,player);
 								}
 								break;
 						
-						case 2:	if(i>1 && j<6 && myAgent.dataSet[i-1][j+1]>=0)
+						case 2:	if(i>1 && j<6 && node.newConfig[i-1][j+1]>=0)
 								{
 									newPosition = searchPosition(node, myAgent,i-1,j+1,k,player);
 								}
 								break;
 						
-						case 3:	if(j>1 && myAgent.dataSet[i][j-1]>=0)
+						case 3:	if(j>1 && node.newConfig[i][j-1]>=0)
 								{
 									newPosition = searchPosition(node, myAgent,i,j-1,k,player);
 								}
 								break;
 				
-						case 4:	if(j <6 && myAgent.dataSet[i][j+1]>=0)
+						case 4:	if(j <6 && node.newConfig[i][j+1]>=0)
 								{
 									newPosition = searchPosition(node, myAgent,i,j+1,k,player);
 									
 								}
 								break;
 								
-						case 5: if(i<6 && j>1 && myAgent.dataSet[i+1][j-1]>=0)
+						case 5: if(i<6 && j>1 && node.newConfig[i+1][j-1]>=0)
 								{
 									newPosition = searchPosition(node, myAgent,i+1,j-1,k,player);
 								}
 								break;
 				
-						case 6: if(i<6 && myAgent.dataSet[i+1][j]>=0)
+						case 6: if(i<6 && node.newConfig[i+1][j]>=0)
 								{
 									newPosition = searchPosition(node, myAgent,i+1,j,k,player);
 								}
 								break;
 					
-						case 7: if(i<6 && j<6 && myAgent.dataSet[i+1][j+1]>=0)
+						case 7: if(i<6 && j<6 && node.newConfig[i+1][j+1]>=0)
 								{
 									newPosition = searchPosition(node, myAgent,i+1,j+1,k,player);
 								}
@@ -318,7 +373,7 @@ String log = "Node,Depth,Value,Alpha,Beta";
 				{
 					oppCoins=true;
 				}
-				if(oppCoins && (player.equalsIgnoreCase("O") && node.newConfig[m][n]==0)  ||
+				else if((player.equalsIgnoreCase("O") && node.newConfig[m][n]==0)  ||
 						(player.equalsIgnoreCase("X") && node.newConfig[m][n]==1))
 				{
 					//No move as player coin appears after opponent coins before an empty location
@@ -369,17 +424,22 @@ String log = "Node,Depth,Value,Alpha,Beta";
 
 	void displayMove(Node node, String log)
 	{
-		if(node!=null)
+		String [][] state = null;
+		
+		if(node.myMove==null)
+			state = node.newStringConfig;
+		else
+			state = node.myMove.newStringConfig;
+		
+		for(int i=0;i<8;i++)
 		{
-			for(int i=0;i<8;i++)
-			{
 			String temp ="";
 			for(int j=0;j<8;j++)
-				temp+=node.newStringConfig[i][j]+"	";
+				temp+=state[i][j]+"	";
 			
 			System.out.println(temp);
-			}
 		}
+		
 		System.out.println(log);
 	}
 	

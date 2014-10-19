@@ -13,6 +13,7 @@ public class Node implements Comparable<Node>{
 	int score=0;
 	int gameMode =0;
 	boolean pass = false;
+	Node myMove = null;
 	
 	List<int[]> currentPositions= new ArrayList<int[]>();
 	
@@ -22,7 +23,7 @@ public class Node implements Comparable<Node>{
 	
 	void calculateScore(Node parent, Agent myAgent, String player, String opponent, int depth)
 	{
-		copyArray(parent);
+		copyArray(parent,null);
 		
 		int i=startNode[0];
 		int j=startNode[1];
@@ -84,17 +85,23 @@ public class Node implements Comparable<Node>{
 			
 			score = playerScore - opponentScore;
 		
-			score = (depth==myAgent.searchCutOffDepth)?score: ((player == myAgent.myPlayer)?99999:-99999);
+			score = (depth==myAgent.searchCutOffDepth || currentPositions.size() == 0)?score: ((player == myAgent.myPlayer)?99999:-99999);
 		
 	}
 
-	void copyArray(Node parent)
+	void copyArray(Node parent, String player)
 	{
+		if(player!=null)
+			currentPositions = new ArrayList<int[]>();
+			
 		for(int i=0;i<parent.newConfig.length;i++)
 			for(int j=0;j<parent.newConfig.length;j++)
 			{
 				newConfig[i][j]=parent.newConfig[i][j];
 				newStringConfig[i][j]=parent.newStringConfig[i][j];
+				
+				if(player != null && newStringConfig[i][j].equalsIgnoreCase(player))
+					currentPositions.add(new int[]{i,j});
 			}
 	}
 	
