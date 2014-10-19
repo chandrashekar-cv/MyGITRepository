@@ -33,6 +33,7 @@ public class Agent {
 		myAgent.readFile();
 		//myAgent.displayInput();
 		
+		
 		switch(myAgent.mode)
 		{
 			case 1: Greedy greedy = new Greedy();		
