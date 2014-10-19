@@ -1,5 +1,9 @@
 package test1;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -8,7 +12,7 @@ public class MinMax {
 	
 	String log = "Node,Depth,Value";
 	
-	void findNextMinMaxMove(Agent myAgent)
+	void findNextMinMaxMove(Agent myAgent) throws IOException
 	{
 
 		int depth=0;
@@ -347,9 +351,11 @@ public class MinMax {
 		
 	}
 
-	void displayMove(Node node, String log)
+	void displayMove(Node node, String log) throws IOException
 	{
 		String [][] state = null;
+		
+		BufferedWriter writer = new BufferedWriter(new FileWriter(new File("output.txt")));
 		
 		if(node.myMove==null)
 			state = node.newStringConfig;
@@ -360,12 +366,13 @@ public class MinMax {
 		{
 			String temp ="";
 			for(int j=0;j<8;j++)
-				temp+=state[i][j]+"	";
+				temp+=state[i][j];
 			
-			System.out.println(temp);
+			writer.append(temp+"\n");
 		}
 		
-		System.out.println(log);
+		writer.append(log);
+		writer.close();
 	}
 	
 	void AddLog(Node current, int depth)

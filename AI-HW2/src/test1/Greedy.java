@@ -1,12 +1,16 @@
 package test1;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
 
 public class Greedy {
 	
-	void findNextGreedyMove(Agent myAgent)
+	void findNextGreedyMove(Agent myAgent) throws IOException
 	{
 		PriorityQueue<Node> scores = new PriorityQueue<Node>();
 		List<int []> currentPositions = myAgent.currentPositions;
@@ -184,16 +188,20 @@ public class Greedy {
 		
 	}
 
-	void displayMove(Node node)
+	void displayMove(Node node) throws IOException
 	{
+		BufferedWriter writer = new BufferedWriter(new FileWriter(new File("output.txt")));
+		
 		for(int i=0;i<8;i++)
 		{
 			String temp ="";
 			for(int j=0;j<8;j++)
-				temp+=node.newStringConfig[i][j]+"	";
+				temp+=node.newStringConfig[i][j];
 			
-			System.out.println(temp);
+			writer.append(temp+"\n");
 		}
+		
+		writer.close();
 	}
 	
 	
