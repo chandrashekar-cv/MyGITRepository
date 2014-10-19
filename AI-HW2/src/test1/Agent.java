@@ -50,6 +50,7 @@ public class Agent {
 	
 	void readFile() throws IOException
 	{
+		@SuppressWarnings("resource")
 		BufferedReader reader = new BufferedReader(new FileReader(new File("input.txt")));
 		
 		int counter = 0;
