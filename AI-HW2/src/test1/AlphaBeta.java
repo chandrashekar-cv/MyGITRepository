@@ -39,6 +39,7 @@ String log = "Node,Depth,Value,Alpha,Beta";
 		List<Node> result = possibleMoves(current,depth+1,myAgent,player,opponent);
 		if(result!=null)
 			movesAvail.addAll(result);
+		@SuppressWarnings("unused")
 		Node myMove = null;
 		if(!movesAvail.isEmpty())
 		{
