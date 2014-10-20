@@ -86,14 +86,14 @@ String log = "Node,Depth,Value,Alpha,Beta";
 			{
 				if(IsEndGame(current.newStringConfig,player,opponent))
 				{
-					current.score = current.utilityFunction(player, opponent, myAgent);
+					current.score = current.utilityFunction(myAgent.myPlayer, myAgent.opponent, myAgent);
 					AddLog(current, Alpha, Beta, depth);
 					return current;
 				}
 				else if(current.pass)
 				{
 					AddLog(current, Alpha, Beta, depth);
-					current.score = current.utilityFunction(player, opponent, myAgent);
+					current.score = current.utilityFunction(myAgent.myPlayer, myAgent.opponent, myAgent);
 					AddLog(current, Alpha, Beta, depth+1);
 					
 					if(Alpha < current.score)
@@ -200,14 +200,14 @@ String log = "Node,Depth,Value,Alpha,Beta";
 			{
 				if(IsEndGame(current.newStringConfig,player,opponent))
 				{
-					current.score = current.utilityFunction(opponent, player, myAgent);
+					current.score = current.utilityFunction(myAgent.myPlayer, myAgent.opponent, myAgent);
 					AddLog(current, Alpha, Beta, depth);
 					return current;
 				}
 				else if(current.pass)
 				{
 					AddLog(current, Alpha, Beta, depth);
-					current.score = current.utilityFunction(opponent, player, myAgent);
+					current.score = current.utilityFunction(myAgent.myPlayer, myAgent.opponent, myAgent);
 					AddLog(current, Alpha, Beta, depth+1);
 					
 					if(Beta > current.score)

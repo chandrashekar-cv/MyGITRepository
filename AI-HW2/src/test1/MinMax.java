@@ -66,10 +66,21 @@ public class MinMax {
 		}
 		else  //No move found for the current player
 		{
-			if(depth<myAgent.searchCutOffDepth && checkEndGame(current.newStringConfig,player,opponent))
+			if(depth<myAgent.searchCutOffDepth)
 			{
-				if(current.pass)
+				if(IsEndGame(current.newStringConfig,player,opponent))
 				{
+					current.score = current.utilityFunction(myAgent.myPlayer, myAgent.opponent, myAgent);
+					AddLog(current, depth);
+					return current;
+				}
+				else if(current.pass)
+				{
+					AddLog(current, depth);
+					current.score = current.utilityFunction(myAgent.myPlayer, myAgent.opponent, myAgent);
+					AddLog(current, depth+1);
+					AddLog(current, depth);
+					
 					return current;
 				}
 				else
@@ -127,11 +138,21 @@ public class MinMax {
 		}
 		else
 		{
-			if(depth<myAgent.searchCutOffDepth && checkEndGame(current.newStringConfig,player,opponent))
+			if(depth<myAgent.searchCutOffDepth)
 			{
-				if(current.pass)
+				if(IsEndGame(current.newStringConfig,player,opponent))
 				{
-					return current;
+						current.score = current.utilityFunction(myAgent.myPlayer, myAgent.opponent, myAgent);
+						AddLog(current, depth);
+						return current;
+				}
+				else if(current.pass)
+				{
+						AddLog(current,depth);
+						current.score = current.utilityFunction(opponent, player, myAgent);
+						AddLog(current, depth+1);
+						AddLog(current, depth);
+						return current;
 				}
 				else
 				{
@@ -162,7 +183,7 @@ public class MinMax {
 	}
 	
 	
-	 static boolean checkEndGame(String[][] state,String player, String opponent)
+	static boolean IsEndGame(String[][] state,String player, String opponent)
 	{
 		boolean pl=false;
 		boolean op = false;
@@ -180,7 +201,7 @@ public class MinMax {
 					fullBoard = false;
 			}
 				
-		return (!fullBoard && op && pl);
+		return (fullBoard || !( op && pl));
 	}
 	
 	/*
@@ -377,8 +398,8 @@ public class MinMax {
 	
 	void AddLog(Node current, int depth)
 	{
-		this.log = (current.endNode==null)? 
-				this.log+"\n"+"root,"+depth+","+((current.score==99999)? "Infinity" : ((current.score==-99999)?"-Infinity":current.score)) :
+		this.log = (current.endNode==null || current.pass)? 
+				this.log+"\n"+((current.pass)?"pass":"root")+","+depth+","+((current.score==99999)? "Infinity" : ((current.score==-99999)?"-Infinity":current.score)) :
 				this.log+"\n"+((char)(current.endNode[1]+97))+(current.endNode[0]+1)+","+depth+","+
 				((current.score==99999)? "Infinity" : ((current.score==-99999)?"-Infinity":current.score));
 							
