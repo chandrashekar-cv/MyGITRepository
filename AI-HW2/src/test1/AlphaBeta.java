@@ -75,8 +75,6 @@ String log = "Node,Depth,Value,Alpha,Beta";
 				if(Alpha < tempAlpha)
 					Alpha = tempAlpha;
 				
-				
-				
 				current.Alpha = Alpha;
 					
 			}
@@ -84,10 +82,25 @@ String log = "Node,Depth,Value,Alpha,Beta";
 		}
 		else  //No move found for the current player
 		{
-			if(depth<myAgent.searchCutOffDepth && checkEndGame(current.newStringConfig,player,opponent))
+			if(depth<myAgent.searchCutOffDepth )
 			{
-				if(current.pass)
+				if(IsEndGame(current.newStringConfig,player,opponent))
 				{
+					current.score = current.utilityFunction(player, opponent, myAgent);
+					AddLog(current, Alpha, Beta, depth);
+					return current;
+				}
+				else if(current.pass)
+				{
+					AddLog(current, Alpha, Beta, depth);
+					current.score = current.utilityFunction(player, opponent, myAgent);
+					AddLog(current, Alpha, Beta, depth+1);
+					
+					if(Alpha < current.score)
+						Alpha = current.score;
+					
+					AddLog(current, Alpha, Beta, depth);
+					
 					return current;
 				}
 				else
@@ -177,22 +190,35 @@ String log = "Node,Depth,Value,Alpha,Beta";
 					Beta = tempBeta;
 				}
 				
-				
 				current.Beta = Beta;
 				
 			}
 		}
 		else
 		{
-			if(depth<myAgent.searchCutOffDepth && checkEndGame(current.newStringConfig,player,opponent))
+			if(depth<myAgent.searchCutOffDepth)
 			{
-				if(current.pass)
+				if(IsEndGame(current.newStringConfig,player,opponent))
 				{
+					current.score = current.utilityFunction(opponent, player, myAgent);
+					AddLog(current, Alpha, Beta, depth);
+					return current;
+				}
+				else if(current.pass)
+				{
+					AddLog(current, Alpha, Beta, depth);
+					current.score = current.utilityFunction(opponent, player, myAgent);
+					AddLog(current, Alpha, Beta, depth+1);
+					
+					if(Beta > current.score)
+						Beta = current.score;
+					
+					AddLog(current, Alpha, Beta, depth);
 					return current;
 				}
 				else
 				{
-//					/current.pass = true;
+
 					AddLog(current, Alpha, Beta, depth);
 					
 					Node temp = new Node();
@@ -238,7 +264,7 @@ String log = "Node,Depth,Value,Alpha,Beta";
 	}
 	
 	
-	 static boolean checkEndGame(String[][] state,String player, String opponent)
+	static boolean IsEndGame(String[][] state,String player, String opponent)
 	{
 		boolean pl=false;
 		boolean op = false;
@@ -256,7 +282,7 @@ String log = "Node,Depth,Value,Alpha,Beta";
 					fullBoard = false;
 			}
 				
-		return (!fullBoard && op && pl);
+		return (fullBoard || !( op && pl));
 	}
 	
 	/*
