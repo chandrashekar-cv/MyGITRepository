@@ -237,4 +237,24 @@ public class Node implements Comparable<Node>{
 		
 	}
 	
+	
+	int utilityFunction(String player, String opponent, Agent myAgent)
+	{
+		int score = 0;
+		
+		for(int m=0;m<8;m++)
+		{
+			for(int n=0;n<8;n++)
+			{
+				if((player.equalsIgnoreCase("x") && newConfig[m][n]==0)||(player.equalsIgnoreCase("o") && newConfig[m][n]==1))
+					score = score- myAgent.positionalWeights[m][n];
+				else if((player.equalsIgnoreCase("o") && newConfig[m][n]==0)||(player.equalsIgnoreCase("x") && newConfig[m][n]==1))
+					score = score+ myAgent.positionalWeights[m][n];
+			}
+		}
+		
+		return score;
+		
+	}
+	
 }
