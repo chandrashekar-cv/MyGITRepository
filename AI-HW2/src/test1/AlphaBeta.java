@@ -179,7 +179,7 @@ String log = "Node,Depth,Value,Alpha,Beta";
 				if(current.score > temp.score)
 					current.score = temp.score;
 				
-				if(Alpha >= Beta)
+				if(Alpha >= tempBeta)
 				{
 					AddLog(current, Alpha, Beta, depth);
 					return current;

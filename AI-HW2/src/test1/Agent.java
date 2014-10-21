@@ -60,6 +60,7 @@ public class Agent {
 		while((line=reader.readLine())!=null)
 		{
 			
+			
 			switch(counter)
 			{
 				case 0: mode = Integer.parseInt(line);
@@ -74,22 +75,24 @@ public class Agent {
 						inputStringState = new String[8][8];
 						dataSet = new int[8][8]; 
 						for(int i=0;i<8;i++)
-						{
-							String split[]=line.split("");
+						{	
+							
 							for(int j=0;j<8;j++)
 							{
-								inputStringState[i][j]=split[j];
-								if(split[j].equalsIgnoreCase("*"))
+								String split = String.valueOf(line.charAt(j));
+								
+								inputStringState[i][j]=split;
+								if(split.equalsIgnoreCase("*"))
 								{
 									dataSet[i][j]=-9;
 								}
-								else if(split[j].equalsIgnoreCase("x"))
+								else if(split.equalsIgnoreCase("x"))
 								{
 									dataSet[i][j]=1;
 									if(myPlayer.equalsIgnoreCase("x"))
 										currentPositions.add(new int[]{i,j});
 								}
-								else if(split[j].equalsIgnoreCase("o"))
+								else if(split.equalsIgnoreCase("o"))
 								{
 									dataSet[i][j] = 0;
 									if(myPlayer.equalsIgnoreCase("o"))
