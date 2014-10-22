@@ -92,7 +92,7 @@ public class MinMax {
 					temp.endNode = current.endNode;
 					temp.gameMode = myAgent.mode;
 					temp.pass = true;
-					temp.score = current.score;
+					temp.score = 99999;
 					temp.copyArray(current,opponent);
 					
 					Node uselessMove = MIN(temp, depth+1, myAgent, opponent, player, Alpha, Beta);
@@ -164,7 +164,7 @@ public class MinMax {
 					temp.endNode = current.endNode;
 					temp.gameMode = myAgent.mode;
 					temp.pass = true;
-					temp.score = current.score;
+					temp.score =-99999;
 					temp.copyArray(current,opponent);
 					
 					Node uselessMove  = MAX(temp, depth+1, myAgent, opponent, player, Alpha, Beta);
