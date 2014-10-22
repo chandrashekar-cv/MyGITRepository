@@ -17,10 +17,15 @@ public class Greedy {
 		int depth=0;
 		for(int i=0;i<currentPositions.size();i++)
 		{
-			scores.addAll(possibleMoves(myAgent, currentPositions.get(i),depth++));
+			List<Node> temp =possibleMoves(myAgent, currentPositions.get(i),depth+1); 
+			if(temp != null)
+				scores.addAll(temp);
 		}
 		
-		displayMove(scores.peek());
+		if(scores.size() == 0)
+			displayMove(myAgent.inputStringState);
+		else
+			displayMove(scores.peek().newStringConfig);
 	}
 	
 	
@@ -35,10 +40,6 @@ public class Greedy {
 		
 		int i=myMove[0];
 		int j=myMove[1];
-		
-		
-		if(depth<=myAgent.searchCutOffDepth)
-		{
 			
 			for(int k=0;k<8;k++)
 			{
@@ -46,50 +47,50 @@ public class Greedy {
 				switch(k)
 				{
 					
-					case 0: if(i>2 && j>2 && myAgent.dataSet[i-1][j-1]>=0)
+					case 0: if(i>1 && j>1 && myAgent.dataSet[i-1][j-1]>=0)
 							{
 								newPosition = searchPosition(myAgent,i-1,j-1,k);
 							}
 							break;
 					
-					case 1: if(i>2 && myAgent.dataSet[i-1][j]>=0)
+					case 1: if(i>1 && myAgent.dataSet[i-1][j]>=0)
 							{
 								newPosition = searchPosition(myAgent,i-1,j,k);
 							}
 							break;
 					
-					case 2:	if(i>2 && j<6 && myAgent.dataSet[i-1][j+1]>=0)
+					case 2:	if(i>1 && j<7 && myAgent.dataSet[i-1][j+1]>=0)
 							{
 								newPosition = searchPosition(myAgent,i-1,j+1,k);
 							}
 							break;
 					
-					case 3:	if(j>2 && myAgent.dataSet[i][j-1]>=0)
+					case 3:	if(j>1 && myAgent.dataSet[i][j-1]>=0)
 							{
 								newPosition = searchPosition(myAgent,i,j-1,k);
 							}
 							break;
 			
-					case 4:	if(j <6 && myAgent.dataSet[i][j+1]>=0)
+					case 4:	if(j <7 && myAgent.dataSet[i][j+1]>=0)
 							{
 								newPosition = searchPosition(myAgent,i,j+1,k);
 								
 							}
 							break;
 							
-					case 5: if(i<6 && j>2 && myAgent.dataSet[i+1][j-1]>=0)
+					case 5: if(i<7 && j>1 && myAgent.dataSet[i+1][j-1]>=0)
 							{
 								newPosition = searchPosition(myAgent,i+1,j-1,k);
 							}
 							break;
 			
-					case 6: if(i<6 && myAgent.dataSet[i+1][j]>=0)
+					case 6: if(i<7 && myAgent.dataSet[i+1][j]>=0)
 							{
 								newPosition = searchPosition(myAgent,i+1,j,k);
 							}
 							break;
 				
-					case 7: if(i<6 && j<6 && myAgent.dataSet[i+1][j+1]>=0)
+					case 7: if(i<7 && j<7 && myAgent.dataSet[i+1][j+1]>=0)
 							{
 								newPosition = searchPosition(myAgent,i+1,j+1,k);
 							}
@@ -110,10 +111,6 @@ public class Greedy {
 			
 			//after exploring all the possible moves for 1 coin on the board, return something. not sure what for now.
 			return positions;
-			
-		}
-		else
-			return null;
 		
 	}
 	
@@ -139,7 +136,7 @@ public class Greedy {
 				{
 					oppCoins=true;
 				}
-				if(oppCoins && (myAgent.myPlayer.equalsIgnoreCase("o") && myAgent.dataSet[m][n]==0)  ||
+				else if((myAgent.myPlayer.equalsIgnoreCase("o") && myAgent.dataSet[m][n]==0)  ||
 						(myAgent.myPlayer.equalsIgnoreCase("x") && myAgent.dataSet[m][n]==1))
 				{
 					//No move as player coin appears after opponent coins before an empty location
@@ -188,7 +185,7 @@ public class Greedy {
 		
 	}
 
-	void displayMove(Node node) throws IOException
+	void displayMove(String[][] newStringConfig) throws IOException
 	{
 		BufferedWriter writer = new BufferedWriter(new FileWriter(new File("output.txt")));
 		
@@ -196,13 +193,12 @@ public class Greedy {
 		{
 			String temp ="";
 			for(int j=0;j<8;j++)
-				temp+=node.newStringConfig[i][j];
+				temp+=newStringConfig[i][j];
 			
 			writer.append(temp+"\n");
 		}
 		
 		writer.close();
 	}
-	
 	
 }
